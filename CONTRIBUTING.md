@@ -84,11 +84,13 @@ runs automatically:
 3. Runs `score.py` (wraps `harness.py`) against all graphs in `graphs/`
 4. Posts a score comment on the PR with per-graph speedups and pass/fail status
 
-When the PR is **merged to main**, two more jobs run:
+When the PR is **merged to main**, three more jobs run:
 
 5. **update-leaderboard** — upserts the entry into `scores/leaderboard.json` (keeps
    the better score if the user already has one) and pushes to `main`
-6. **deploy-pages** — deploys the updated leaderboard to GitHub Pages
+6. **cleanup** — automatically removes the submission file from `main` after scoring
+   to keep the repo clean and so it won't be cloned by other participants
+7. **deploy-pages** — deploys the updated leaderboard to GitHub Pages
 
 ### Scoring details
 

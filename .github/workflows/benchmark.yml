@@ -332,6 +332,24 @@ jobs:
             exit 1
           fi
 
+      - name: Remove submission file from main
+        if: steps.push_score.outputs.succeeded == 'true'
+        shell: bash
+        env:
+          SUBMISSION: ${{ needs.score.outputs.username }}
+        run: |
+          set -euo pipefail
+
+          git fetch origin main
+          git reset --hard origin/main
+
+          submission_file="submissions/${SUBMISSION}.py"
+          if [[ -f "$submission_file" ]]; then
+            git rm "$submission_file"
+            git commit -m "Remove scored submission: ${SUBMISSION}"
+            git push origin HEAD:main
+          fi
+
   deploy-pages:
     runs-on: ubuntu-latest
     needs: update-leaderboard

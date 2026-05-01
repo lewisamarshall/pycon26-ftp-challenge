@@ -200,6 +200,31 @@ def print_summary(results: list[dict]) -> None:
     print(f"{'=' * 60}")
 
 
+def _median_result(trial_results: list[dict]) -> dict:
+    """Pick the median trial by submission_time. Average two middle for even counts."""
+    sorted_trials = sorted(trial_results, key=lambda r: r["submission_time"])
+    n = len(sorted_trials)
+    all_passed = all(r["passed"] for r in sorted_trials)
+    all_errors = []
+    for r in sorted_trials:
+        all_errors.extend(r["errors"])
+    if n % 2 == 1:
+        result = dict(sorted_trials[n // 2])
+    else:
+        lo = sorted_trials[n // 2 - 1]
+        hi = sorted_trials[n // 2]
+        result = {
+            "graph": lo["graph"],
+            "num_targets": lo["num_targets"],
+            "reference_time": (lo["reference_time"] + hi["reference_time"]) / 2,
+            "submission_time": (lo["submission_time"] + hi["submission_time"]) / 2,
+            "speedup": (lo["speedup"] + hi["speedup"]) / 2,
+        }
+    result["passed"] = all_passed
+    result["errors"] = all_errors
+    return result
+
+
 def format_json_results(results: list[dict]) -> dict:
     """Build a JSON-serializable output dict from a list of run results."""
     if len(results) == 1:
@@ -228,6 +253,12 @@ def main():
     parser.add_argument(
         "--json", action="store_true", help="Output results as JSON"
     )
+    parser.add_argument(
+        "--num-trials",
+        type=int,
+        default=1,
+        help="Run each graph this many times and use the median result",
+    )
     args = parser.parse_args()
 
     # Load submission
@@ -246,8 +277,14 @@ def main():
     # Run
     results = []
     for gf in graph_files:
-        graph = BuildGraph.load(str(gf))
-        result = run_one(submission_module, graph, gf.name)
+        trial_results = []
+        for _ in range(args.num_trials):
+            graph = BuildGraph.load(str(gf))
+            trial_results.append(run_one(submission_module, graph, gf.name))
+        if args.num_trials > 1:
+            result = _median_result(trial_results)
+        else:
+            result = trial_results[0]
         if not args.json:
             print_result(result)
         results.append(result)

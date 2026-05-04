@@ -92,13 +92,32 @@ jobs:
         with:
           python-version: "3.14"
 
+      - name: Check org membership
+        id: check_meta
+        run: |
+          set -e
+          USERNAME="${{ github.event.pull_request.user.login }}"
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: token ${{ secrets.ORG_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/orgs/facebook/members/${USERNAME}")
+          if [ "$HTTP_CODE" = "204" ]; then
+            echo "is_meta=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_meta=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Update journal
         run: |
           set -e
           cat <<EOF > ${{ runner.temp }}/results.txt
           ${{ needs.run_harness.outputs.results }}
           EOF
-          python scores/format_journal_entry.py ${{ github.event.pull_request.user.login }} ${{ github.event.pull_request.html_url }} ${{ github.event.pull_request.number }} ${{ runner.temp }}/results.txt >> scores/journal.txt
+          IS_META_FLAG=""
+          if [ "${{ steps.check_meta.outputs.is_meta }}" = "true" ]; then
+            IS_META_FLAG="--is-meta"
+          fi
+          python scores/format_journal_entry.py ${{ github.event.pull_request.user.login }} ${{ github.event.pull_request.html_url }} ${{ github.event.pull_request.number }} ${{ runner.temp }}/results.txt $IS_META_FLAG >> scores/journal.txt
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add scores/journal.txt

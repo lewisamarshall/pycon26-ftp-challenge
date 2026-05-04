@@ -39,7 +39,7 @@ def build_leaderboard(entries):
             "num_runs": run_counts[user],
             "pr_number": int(entry["pr_number"]),
             "pr_url": entry["pr_url"],
-            "is_meta": False,
+            "is_meta": entry.get("is_meta", False),
         })
 
     top_entry = best_by_user[sorted_users[0]] if sorted_users else None

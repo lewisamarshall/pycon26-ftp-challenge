@@ -107,6 +107,10 @@ jobs:
 
   update_leaderboard:
     needs: update_journal
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
     uses: ./.github/workflows/update_leaderboard.yml
 
   report_results:

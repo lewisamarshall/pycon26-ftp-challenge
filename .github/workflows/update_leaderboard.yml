@@ -1,7 +1,11 @@
 name: Update Leaderboard
 
 on:
-  workflow_call:
+  push:
+    branches:
+      - main
+    paths:
+      - scores/journal.txt
   workflow_dispatch:
 
 permissions:

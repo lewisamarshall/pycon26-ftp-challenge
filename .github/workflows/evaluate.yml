@@ -105,14 +105,6 @@ jobs:
           git commit -m "Log submission result from ${{ github.event.workflow_run.jobs.evaluate.pr_author }}"
           git push
 
-  update_leaderboard:
-    needs: update_journal
-    permissions:
-      contents: write
-      pages: write
-      id-token: write
-    uses: ./.github/workflows/update_leaderboard.yml
-
   report_results:
     needs: run_harness
     runs-on: ubuntu-latest

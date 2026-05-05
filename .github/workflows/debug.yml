@@ -49,10 +49,10 @@ jobs:
           echo "=== Full env diff (service vs login) ==="
           env | sort
 
-        - name: First run with perf counters
-          run: |
-            sudo perf stat -d -d uv run --python 3.14.3t challenge/harness.py submissions/example.py graphs/diamond.json 2>&1
+      - name: First run with perf counters
+        run: |
+          sudo perf stat -d -d uv run --python 3.14.3t challenge/harness.py submissions/example.py graphs/diamond.json 2>&1
 
-        - name: Second run with perf counters
-          run: |
-            sudo perf stat -d -d uv run --python 3.14.3t challenge/harness.py submissions/example.py graphs/diamond.json 2>&1
+      - name: Second run with perf counters
+        run: |
+          sudo perf stat -d -d uv run --python 3.14.3t challenge/harness.py submissions/example.py graphs/diamond.json 2>&1

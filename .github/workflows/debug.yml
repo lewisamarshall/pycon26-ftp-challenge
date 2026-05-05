@@ -63,7 +63,18 @@ jobs:
           echo "Using: $PYPATH"
           PYTHONPATH=challenge $PYPATH challenge/harness.py submissions/example.py graphs
 
-      - name: Profile syscalls on single graph
+      - name: Test uv invocation variants
         run: |
-          PYPATH=$(uv run --python 3.14.3t python -c "import sys; print(sys.executable)")
-          strace -c -f -e trace=futex PYTHONPATH=challenge $PYPATH challenge/harness.py submissions/example.py graphs/diamond.json 2>&1 | tail -20
+          echo "=== Direct script mode (current, broken) ==="
+          uv run --python 3.14.3t challenge/harness.py submissions/example.py graphs/diamond.json
+
+          echo ""
+          echo "=== Explicit python command ==="
+          uv run --python 3.14.3t python challenge/harness.py submissions/example.py graphs/diamond.json
+
+      - name: Check exact execve calls
+        run: |
+          echo "=== Script mode execve ==="
+          strace -f -e trace=execve uv run --python 3.14.3t challenge/harness.py --help 2>&1 | grep python
+          echo "=== Command mode execve ==="
+          strace -f -e trace=execve uv run --python 3.14.3t python -c "print('hi')" 2>&1 | grep python

@@ -48,17 +48,13 @@ jobs:
           env | grep -iE "malloc|alloc|ld_preload" || echo "<none>"
           echo "=== Full env diff (service vs login) ==="
           env | sort
-      - name: Check what's running before first harness
-        run: |
-          ps aux --sort=-%cpu | head -20
+
+      - name: Wait for bg work to settle
+        run: sleep 60
 
       - name: First harness run
         run: |
           uv run --python 3.14.3t challenge/harness.py submissions/example.py graphs/diamond.json
-
-      - name: Check what's running before second harness
-        run: |
-          ps aux --sort=-%cpu | head -20
 
       - name: Second harness run
         run: |

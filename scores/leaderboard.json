@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-05-16T16:15:12.801661+00:00",
+  "last_updated": "2026-05-16T16:53:44.283532+00:00",
   "baseline_time": 41.226052417070605,
   "entries": [
     {
@@ -37,6 +37,18 @@
       "pr_number": 17,
       "pr_url": "https://github.com/mpage/pycon26-ftp-challenge/pull/17",
       "is_meta": false
+    },
+    {
+      "username": "alexmalyshev",
+      "display_name": "alexmalyshev",
+      "median_time_seconds": 6.75492324703373,
+      "speedup": "5.94",
+      "status": "valid",
+      "merged_at": "2026-05-16T16:53:34+00:00",
+      "num_runs": 1,
+      "pr_number": 26,
+      "pr_url": "https://github.com/mpage/pycon26-ftp-challenge/pull/26",
+      "is_meta": true
     },
     {
       "username": "cho-minsung",
